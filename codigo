@@ -285,7 +285,7 @@ void evolucion_del_volumen_de_la_cuenca(Registro registros[], int num_registros,
 	}
 }
 
-void diagrma_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_registros, const char *cuenca){
+void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_registros, const char *cuenca){
 	float volumenes_anuales[NUM_ANIOS] = {0};
 	
 	for(int anio = 0; anio < NUM_ANIOS; anio++){
