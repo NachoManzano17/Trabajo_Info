@@ -335,12 +335,13 @@ void diagrma_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_r
 
 void menu_nuevas_funcionalidades(){
 	printf("\n\nEscoja una funcionalidad\n");
-	printf("[1] Identificar los periodos de sequia y abundancia hidrica de la cuenca: \n");
-	printf("[2] Comparar con otras cuencas: \n");
-	printf("[3] \n");
-	printf("[4] \n");
-	printf("[5] \n");
-	printf("[6] Salir\n");
+	printf("[1] Media anual del volumen de la cuenca del año elegido: \n");
+	printf("[2] Medias mensuales del volumen de la cuenca en el año elegido: \n");
+	printf("[3] Evolucion volumetrica de la cuenca a lo largo de los años y su representacion con un diagrama de barras: \n");
+	printf("[4] Volumen del embalse en el año elegido: \n");
+	printf("[5] Comparar con otras cuencas: \n");
+	printf("[6] Identificar los periodos de sequia y abundancia hidrica de la cuenca: \n");
+	printf("[7] Salir\n");
 	printf("Opcion: ");
 }
 
@@ -518,15 +519,15 @@ int main() {
 	} while (mes < 1 || mes > 12);
 	
 	    
-    media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
+    //media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
     
-    media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
+    //media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
     
-    evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
-    diagrma_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
+   //evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
+   //diagrma_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
 
-    printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
-    buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+    //printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
+    //buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
 
     //comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
 
@@ -539,31 +540,47 @@ int main() {
     	
     	switch(opcion){
     		case 1:{
-    			identificacion_sequia_abundancia_hidrica(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-				break;
-			}
-			case 2:{
-				comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-				break;
-			}
-			case 6:{
-				printf("Salinedo del programa...\n");
-				break;
-			}
-			default:{
-				printf("Opcion no valida. Escoja una funcionalidad con un numero del 1 al 6.\n");
-				break;
-			}
+    			media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
+    			break;
+   		}
+   		case 2:{
+   			media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
+   			break;
+   		}
+		case 3:{
+			evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
+   			diagrama_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
+			break;
 		}
-		if (opcion != 6){
-			printf("\nPresione 'Enter' para continuar..");
-			getchar();
+		case 4:{
+			printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
+    			buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+			break;
 		}
-	}while(opcion != 6);
-        
-    
-    
+		case 5:{
+			comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+   			break;
+   		}
+   		case 6:{
+   			identificacion_sequia_abundancia_hidrica(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+    			break;
+   		}
+		case 7:{
+			printf("Salinedo del programa...\n");
+   			break;
+   		}
+   		default:{
+   			printf("Opcion no valida. Escoja una funcionalidad con un numero del 1 al 6.\n");
+   			break;
+   		}
+   	}
+   	if (opcion != 7){
+   		printf("\nPresione 'Enter' para continuar..");
+   		getchar();
+   	}
+   }while(opcion != 7);
+       
     free_string_list(&cuencas);
     free_string_list(&embalses);
-	return 0;
+    return 0;
 }
