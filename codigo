@@ -336,7 +336,7 @@ void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_
 void menu_nuevas_funcionalidades(){
 	printf("\n\nEscoja una funcionalidad\n");
 	printf("[1] Media anual del volumen de la cuenca del anio elegido: \n");
-	printf("[2] Medias mensuales del volumen de la cuenca en el anio elegido: \n");
+	printf("[2] Media mensual del volumen de la cuenca en el anio y mes elegidos: \n");
 	printf("[3] Evolucion volumetrica de la cuenca a lo largo de los anios y su representacion con un diagrama de barras: \n");
 	printf("[4] Volumen del embalse en el anio elegido: \n");
 	printf("[5] Comparar con otras cuencas: \n");
