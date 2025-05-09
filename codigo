@@ -311,7 +311,7 @@ void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_
 		
 		for(int anio = 0; anio < NUM_ANIOS; anio++){
 			if (volumenes_anuales[anio] >= volumenes_nivelados){
-				printf(" * ");
+				printf(" *** ");
 			}
 			else{
 				printf("     ");
@@ -335,10 +335,10 @@ void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_
 
 void menu_nuevas_funcionalidades(){
 	printf("\n\nEscoja una funcionalidad\n");
-	printf("[1] Media anual del volumen de la cuenca del año elegido: \n");
-	printf("[2] Medias mensuales del volumen de la cuenca en el año elegido: \n");
-	printf("[3] Evolucion volumetrica de la cuenca a lo largo de los años y su representacion con un diagrama de barras: \n");
-	printf("[4] Volumen del embalse en el año elegido: \n");
+	printf("[1] Media anual del volumen de la cuenca del anio elegido: \n");
+	printf("[2] Medias mensuales del volumen de la cuenca en el anio elegido: \n");
+	printf("[3] Evolucion volumetrica de la cuenca a lo largo de los anios y su representacion con un diagrama de barras: \n");
+	printf("[4] Volumen del embalse en el anio elegido: \n");
 	printf("[5] Comparar con otras cuencas: \n");
 	printf("[6] Identificar los periodos de sequia y abundancia hidrica de la cuenca: \n");
 	printf("[7] Salir\n");
