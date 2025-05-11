@@ -240,22 +240,22 @@ void comparar_con_otras_cuencas(Registro registros[], int num_registros, const c
         return;
     }
 void mostrar_pluviometria_anual (Pluviometria datos[], int total) {
-printf (“\nMedias anuales de Pluviometria: \n”; 
-printf (“%-10s %-15s\n”, “Año”, “Lluvia (mm)”);
-for (int i = 0; i < total, i++) {
-     	printf (%-10d %-15.2f\n”, datos[i].anio, datos[i].lluvia_mm); 
+printf ("\nMedias anuales de Pluviometria: \n"); 
+printf ("%-10s %-15s\n", "Año", "Lluvia (mm)");
+for (int i = 0; i < total; i++) {
+     	printf ("%-10d %-15.2f\n", datos[i].anio, datos[i].lluvia_mm); 
 }
 }
 
 void mostrar_temperaturas_mensuales (Temperatura datos[], int total, int anio) {
-printf (“\nTemperaturas mensuales del año %d: \n”, anio);
-Const char* nombres_meses[NUM_MESES] = {“Enero”, “Febrero“, “Marzo”, “Abril”, “Mayo”, “Junio”, “Julio” , “Agosto” , “Septiembre”, “Octubre” , “Noviembre”, “Diciembre”};
+printf ("\nTemperaturas mensuales del año %d: \n", anio);
+const char* nombres_meses[NUM_MESES] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto" , "Septiembre", "Octubre" , "Noviembre", "Diciembre"};
 
 
-printf (“%-12s %-15s\n”, “Mes”, “Temperatura(ºC)”);
-for (int i = 0; i < total, i++) {
+printf ("%-12s %-15s\n", "Mes", "Temperatura(ºC)");
+for (int i = 0; i < total; i++) {
 	if (datos[i].anio == anio && datos [i].mes >= 1 && datos [i].mes <= 12){
-     	printf (%-12s %-15.2f\n”, nombres_meses [datos[i].mes -1 ], datos[i].temperatura_media); 
+     	printf ("%-12s %-15.2f\n", nombres_meses [datos[i].mes -1 ], datos[i].temperatura_media); 
 }
 }
 }
