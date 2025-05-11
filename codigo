@@ -9,35 +9,60 @@
 #define NUM_MESES 12
 #define ALTURA_MAX 22
 
+// Funcion que lee datos de pluviometría
 int leer_pluviometria(const char* nombre_archivo, Pluviometria datos[], int*total) {
-FILE * f = fopen (nombre_archivo, "r"); 
+FILE * f = fopen (nombre_archivo, "r"); // Abre el archivo en modo lectura 
 if (!f) {
 perror  ("No se puede abrir el archivo de pluviometria"); 
-return 0; 
+return 0; // en caso de no poder abrirlo, retorna 0
 }
 
-*total = 0; 
+*total = 0; // Inicializa el contador de los registros, ademas de leer el archivo con formato; año, lluvia_mm
 while (fscanf(f, "%d,%f", &datos[*total].anio, &datos[*total].lluvia_mm) == 2) {
 (*total)++; 
 }
-fclose (f); 
-return 1; 
+fclose (f); // Cierra el archivo 
+return 1; // En caso de funcionar correctamente, retorna 1
 }
 
-
+// Funcion que lee datos de temperatura
 int leer_temperaturas(const char* nombre_archivo, Temperatura datos[], int*total) {
-FILE * f = fopen (nombre_archivo, "r"); 
+FILE * f = fopen (nombre_archivo, "r");  // Abre el archivo en modo lectura 
 if (!f) {
-perror  ("No se puede abrir el archivo de temperaturas"); 
+if (!f) {
+perror  ("No se puede abrir el archivo de temperaturas");  // en caso de no poder abrirlo, retorna 0;
 return 0; 
 }
 
-*total = 0; 
+*total = 0;  // Inicializa el contador de los registros, ademas de leer el archivo con formato; año,mes,temperatura_media
+
 while (fscanf(f, "%d,%d, %f", &datos[*total].anio, &datos[*total].mes, &datos[*total].temperatura_media)== 3) {
-(*total)++; 
+(*total)++; //se incrementa el contador 
 }
-fclose (f); 
-return 1; 
+fclose (f); //Se cierra el archivo 
+return 1; //En caso de funcionar correctamente, retorna 1
+}
+// Funcion que muestra datos de pluviometría
+void mostrar_pluviometria_anual (Pluviometria datos[], int total) {
+printf (“\nMedias anuales de Pluviometria: \n”; 
+printf (“%-10s %-15s\n”, “Año”, “Lluvia (mm)”);
+for (int i = 0; i < total, i++) {
+     	printf (%-10d %-15.2f\n”, datos[i].anio, datos[i].lluvia_mm); 
+}
+}
+
+// Funcion que muestra datos de temperatura
+void mostrar_temperaturas_mensuales (Temperatura datos[], int total, int anio) {
+printf (“\nTemperaturas mensuales del año %d: \n”, anio);
+Const char* nombres_meses[NUM_MESES] = {“Enero”, “Febrero“, “Marzo”, “Abril”, “Mayo”, “Junio”, “Julio” , “Agosto” , “Septiembre”, “Octubre” , “Noviembre”, “Diciembre”};
+
+
+printf (“%-12s %-15s\n”, “Mes”, “Temperatura(ºC)”);
+for (int i = 0; i < total, i++) {
+	if (datos[i].anio == anio && datos [i].mes >= 1 && datos [i].mes <= 12){
+     	printf (%-12s %-15.2f\n”, nombres_meses [datos[i].mes -1 ], datos[i].temperatura_media); 
+}
+}
 }
 
 
