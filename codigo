@@ -239,7 +239,26 @@ void comparar_con_otras_cuencas(Registro registros[], int num_registros, const c
         printf("No se encontro el embalse '%s' en la cuenca '%s' para el anio %d.\n", embalse_objetivo, cuenca_objetivo, anio);
         return;
     }
+void mostrar_pluviometria_anual (Pluviometria datos[], int total) {
+printf (“\nMedias anuales de Pluviometria: \n”; 
+printf (“%-10s %-15s\n”, “Año”, “Lluvia (mm)”);
+for (int i = 0; i < total, i++) {
+     	printf (%-10d %-15.2f\n”, datos[i].anio, datos[i].lluvia_mm); 
+}
+}
 
+void mostrar_temperaturas_mensuales (Temperatura datos[], int total, int anio) {
+printf (“\nTemperaturas mensuales del año %d: \n”, anio);
+Const char* nombres_meses[NUM_MESES] = {“Enero”, “Febrero“, “Marzo”, “Abril”, “Mayo”, “Junio”, “Julio” , “Agosto” , “Septiembre”, “Octubre” , “Noviembre”, “Diciembre”};
+
+
+printf (“%-12s %-15s\n”, “Mes”, “Temperatura(ºC)”);
+for (int i = 0; i < total, i++) {
+	if (datos[i].anio == anio && datos [i].mes >= 1 && datos [i].mes <= 12){
+     	printf (%-12s %-15.2f\n”, nombres_meses [datos[i].mes -1 ], datos[i].temperatura_media); 
+}
+}
+}
     
     CuencaInfo cuencas[100];
     int num_cuencas = 0;
