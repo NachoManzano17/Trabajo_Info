@@ -43,6 +43,25 @@ typedef struct {
     float temperatura_media;
 } Temperatura;
 
+//Prototipos de las funciones
+void init_string_list(StringList *list);
+void add_to_list_if_unique(StringList *list, const char *value);
+void free_string_list(StringList *list);
+void mostrar_lista(StringList *list);
+void quitar_comillas(char *cadena);
+void buscar_volumen(Registro *registros, int num_registros, const char *cuenca, const char *embalse, int anio);
+void comparar_con_otras_cuencas(Registro registros[], int num_registros, const char *cuenca_objetivo, const char *embalse_objetivo, int anio);
+void media_anual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio);
+void media_mensual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio, int mes);
+void evolucion_del_volumen_de_la_cuenca(Registro registros[], int num_registros, const char *cuenca);
+void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_registros, const char *cuenca);
+void menu_funcionalidades();
+void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_registros, const char *cuenca, const char *embalse, int anio);
+void mostrar_uso_agua_embalse(const char *cuenca, const char *embalse);
+void cambio_de_cuenca(Registro registros[], int num_registros);
+void mostrar_pluviometria_anual(Pluviometria datos[], int total_pluvio);
+void mostrar_temperaturas_mensuales(Temperatura datos[], int total_temp, int anio);
+
 
 
 void init_string_list(StringList *list) {
