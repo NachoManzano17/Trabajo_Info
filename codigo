@@ -12,7 +12,6 @@
 
 
 
-
 typedef struct {
     char cuenca[50];
     char embalse[50];
