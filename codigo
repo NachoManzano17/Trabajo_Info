@@ -332,6 +332,56 @@ void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_
 	}
 	printf("\n");
 }
+//Funció que hemos creado que muestra el uso del agua del embalse
+void mostrar_uso_agua_embalse(const char *cuenca, const char *embalse) {
+    // Abrir el archivo
+    FILE *fp = fopen("uso del agua de los embalses.txt", "r"); 
+   // Verificar si el archivo se pudo abrir correctamente
+    if (!fp) {
+        perror("No se pudo abrir el archivo de usos del agua");// Imprime el error del sistema
+        return;
+    }
+    // Declaración de variables
+    char linea[MAX_LINE]; // Buffer para almacenar cada línea del archivo
+    int encontrado = 0; // Bandera para indicar si se encontró el embalse buscado
+    // Imprime el uso
+    printf("\nUso del agua para el embalse '%s' en la cuenca '%s':\n", embalse, cuenca);
+    
+    // Leer el archivo 
+    while (fgets(linea, MAX_LINE, fp)) {
+        // Variables para almacenar los campos de cada línea
+        char cuenca_archivo[50], embalse_archivo[50], uso[200];
+        
+        
+        char *token = strtok(linea, ","); // puntero que apunta a la primera linea (cuenca)
+        if (!token) continue;  // Si no hay datos, pasar a la siguiente línea
+        strncpy(cuenca_archivo, token, sizeof(cuenca_archivo)); // Copiar cuenca
+        
+        token = strtok(NULL, ",");// puntero que apunta a la segunda linea (embalse)
+        if (!token) continue;
+        strncpy(embalse_archivo, token, sizeof(embalse_archivo)); // Copiar embalse
+        
+        token = strtok(NULL, "\n");  // puntero que apunta a la tercera linea (uso del agua)
+        if (!token) continue;
+        strncpy(uso, token, sizeof(uso)); // Copiar uso del agua
+        
+        
+        // Comparar los datos del archivo
+        if (strcmp(cuenca_archivo, cuenca) == 0 && strcmp(embalse_archivo, embalse) == 0) {
+            // Si coinciden, imprimir el uso del agua
+            printf("  - %s\n", uso);
+            encontrado = 1;
+        }
+    }
+    
+    // Si no se encontró el embalse especificado
+    if (!encontrado) {
+        printf("No se encontró información de uso del agua para este embalse.\n");
+    }
+    
+    fclose(fp);
+}
+
 
 void menu_nuevas_funcionalidades(){
 	printf("\n\nEscoja una funcionalidad\n");
@@ -446,6 +496,86 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 		}
 	}
 }
+// Función que hemos creado que permite al usuario cambiar de cuenca
+void cambio_de_cuenca(Registro registros[], int num_registros){
+    // Limpiar la pantalla imprimiendo varias líneas en blanco
+    for(int i=0; i<30; i++){
+        printf("\n");
+    }
+        
+    StringList cuencas;
+    init_string_list(&cuencas);// Inicializar la lista
+    // añadir cuencas únicas a la lista
+    for (int i = 0; i < num_registros; i++) {
+        add_to_list_if_unique(&cuencas, registros[i].cuenca);
+    }
+    // Mostrar en pantalla las cuencas disponibles para que el usuario elija una
+    printf("\nSeleccione una cuenca:\n");
+    mostrar_lista(&cuencas);
+    int seleccion_cuenca;
+    printf("Opcion: ");
+    scanf("%d", &seleccion_cuenca); // Leemos la opciónque ha elegido el usuario
+    getchar();
+    // Comprobamos que sea válida
+    if (seleccion_cuenca < 1 || seleccion_cuenca > cuencas.count) {
+        printf("Seleccion invalida.\n");
+        free_string_list(&cuencas);
+        return 1;
+    }
+    // Obtenemos el nombre de la cuenca elegida
+    char *cuenca_elegida = cuencas.items[seleccion_cuenca - 1];
+
+    StringList embalses;
+    init_string_list(&embalses);
+    // Agregar a la lista solo los embalses que pertenezcan a la cuenca seleccionada
+    for (int i = 0; i < num_registros; i++) {
+        if (strcmp(registros[i].cuenca, cuenca_elegida) == 0) {
+            add_to_list_if_unique(&embalses, registros[i].embalse);
+        }
+    }
+ // Mostrar embalses disponibles para que el usuario elija uno
+ printf("\nSeleccione un embalse en la cuenca '%s':\n", cuenca_elegida);
+    mostrar_lista(&embalses);
+    int seleccion_embalse;
+    printf("Opcion: ");
+    scanf("%d", &seleccion_embalse);
+    getchar();
+   // Comprobamos que sea válido
+    if (seleccion_embalse < 1 || seleccion_embalse > embalses.count) {
+        printf("Seleccion invalida.\n");
+        free_string_list(&cuencas);
+        free_string_list(&embalses);
+        return 1;
+    }
+    // Obtener el nombre del embalse elegido
+    char *embalse_elegido = embalses.items[seleccion_embalse - 1];
+    // Solicitar al usuario un año
+    int anio;
+    printf("\nIngrese el anio (entre 2012 y 2021): ");
+    scanf("%d", &anio);
+    // Solicitar al usuario un mes
+    int mes;
+    printf("\nIngrese el mes (de forma numerica): ");
+    scanf("%d", &mes);
+    
+    media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
+    
+    media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
+    
+    evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
+    diagrma_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
+
+    printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
+    buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+
+    comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+     
+    free_string_list(&cuencas);
+    free_string_list(&embalses);
+    
+    return 1;    
+}
+
 	
 int main() {
     Registro registros[MAX_REGISTROS];
@@ -565,7 +695,15 @@ int main() {
    			identificacion_sequia_abundancia_hidrica(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
     			break;
    		}
-		case 7:{
+                case 7:{
+			mostrar_uso_agua_embalse(cuenca_elegida, embalse_elegido);
+   			break;
+   		}
+                case 10:{
+			cambio_de_cuenca(registros, num_registros);
+                        continue;
+   		}
+		case 11:{
 			printf("Salinedo del programa...\n");
    			break;
    		}
@@ -574,11 +712,11 @@ int main() {
    			break;
    		}
    	}
-   	if (opcion != 7){
+   	if (opcion != 11){
    		printf("\nPresione 'Enter' para continuar..");
    		getchar();
    	}
-   }while(opcion != 7);
+   }while(opcion != 11);
        
     free_string_list(&cuencas);
     free_string_list(&embalses);
