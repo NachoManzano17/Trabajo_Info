@@ -6,8 +6,6 @@
 #define MAX_REGISTROS 1000
 #define NUM_ANIOS 10
 #define ANIO_BASE 2012
-#define NUM_MESES 12
-#define ALTURA_MAX 22
 
 
 
@@ -216,237 +214,9 @@ void comparar_con_otras_cuencas(Registro registros[], int num_registros, const c
            embalse_objetivo, cuenca_objetivo, volumen_objetivo);
 }
 
-void media_anual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio){
-	int index = anio - ANIO_BASE;
-	
-	if (index < 0 || index >= NUM_ANIOS){
-		printf("Anio fuera de rango.\n");
-		return;
-	}
-	
-	float suma = 0.0;
-	int contador = 0;
-	
-	for (int i = 0; i < num_registros; i++){
-		if(strcmp(registros[i].cuenca, cuenca) == 0){
-			suma += registros[i].volumen[index];
-			contador++;
-		}
-	}
-	
-	if (contador > 0){
-	printf("\nLa media en el %d de la cuenca '%s': %.2f\n", anio, cuenca, suma / contador);
-	}else{
-		printf("\nNo hay datos para %d\n", anio);
-	}
-}
 
-void media_mensual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio, int mes){
-	int index = anio - ANIO_BASE;
-	
-	if (index < 0 || index >= NUM_ANIOS){
-		printf("Anio fuera de rango.\n");
-		return;
-	}
-	if (mes < 1 || mes > 12){
-		printf("El mes debe de estar entre 1 y 12.\n");
-		return;
-	}
-	
-	float suma = 0.0;
-	int contador = 0;
-	
-	for (int i = 0; i < num_registros; i++){
-		if(strcmp(registros[i].cuenca, cuenca) == 0 && registros[i].mes == mes){
-			suma += registros[i].volumen[index];
-			contador++;
-		}
-	}
-	const char* nombres_meses[NUM_MESES] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-	
-	if (contador > 0){
-	printf("\nLa media en %s de %d de la cuenca '%s': %.2f\n", nombres_meses[mes-1], anio, cuenca, suma / contador);
-	}else{
-		printf("\nNo hay datos para %s de %d\n", nombres_meses[mes-1], anio);
-	}
-}
 
-void evolucion_del_volumen_de_la_cuenca(Registro registros[], int num_registros, const char *cuenca){
-	printf("\nLa evolucion anual de la cuenca del %s es:\n", cuenca);
-    for (int anio = 0; anio < NUM_ANIOS; anio++){
-    	float suma = 0.0;
-    	
-    	for (int i = 0; i< num_registros; i++){
-    		if (strcmp(registros[i].cuenca, cuenca) == 0){
-    			suma += registros[i].volumen[anio];
-			}
-		}
-		printf("En el %d, su volumen era: %10.2f\n", ANIO_BASE + anio, suma);
-	}
-}
 
-void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_registros, const char *cuenca){
-	float volumenes_anuales[NUM_ANIOS] = {0};
-	
-	for(int anio = 0; anio < NUM_ANIOS; anio++){
-		for(int i = 0; i < num_registros; i++){
-			if(strcmp(registros[i].cuenca, cuenca) == 0){
-				volumenes_anuales[anio] += registros[i].volumen[anio];
-			}
-		}
-	}
-	
-	float maximo = 0.0;
-	
-	for(int i = 0; i < NUM_ANIOS; i++){
-		if(volumenes_anuales[i] > maximo){
-			maximo = volumenes_anuales[i];
-		}
-	}
-	printf("\nDiagrma de Barras de la evolucion volumetrica anual de la cuenca:\n");
-	
-	for(int nivel = ALTURA_MAX; nivel > 0; nivel--){
-		float volumenes_nivelados = (maximo * nivel / ALTURA_MAX);
-		printf("%6.1f | ", volumenes_nivelados);
-		
-		for(int anio = 0; anio < NUM_ANIOS; anio++){
-			if (volumenes_anuales[anio] >= volumenes_nivelados){
-				printf(" *** ");
-			}
-			else{
-				printf("     ");
-			}
-		}
-		printf("\n");
-	}
-	
-	printf("       +-");
-	
-	for(int anio = 0; anio < NUM_ANIOS; anio++){
-		printf("-----");
-	}
-	printf("\n         ");
-	
-	for(int anio = 0; anio < NUM_ANIOS; anio++){
-		printf(" %4d", anio + ANIO_BASE);
-	}
-	printf("\n");
-}
-
-void menu_nuevas_funcionalidades(){
-	printf("\n\nEscoja una funcionalidad\n");
-	printf("[1] Media anual del volumen de la cuenca del anio elegido: \n");
-	printf("[2] Media mensual del volumen de la cuenca en el anio y mes elegidos: \n");
-	printf("[3] Evolucion volumetrica de la cuenca a lo largo de los anios y su representacion con un diagrama de barras: \n");
-	printf("[4] Volumen del embalse en el anio elegido: \n");
-	printf("[5] Comparar con otras cuencas: \n");
-	printf("[6] Identificar los periodos de sequia y abundancia hidrica de la cuenca: \n");
-	printf("[7] Salir\n");
-	printf("Opcion: ");
-}
-
-void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_registros, const char *cuenca, const char *embalse, int anio){
-	printf("\nIdentificacion de sequia y abundancia hidrica del emblase '%s' de la cuenca '%s'' en el anio %d\n:", embalse, cuenca, anio);
-	printf("\n%-12s %-8s %-8s %-15s\n", "Mes", "Actual", "Media", "Estado");
-	
-	
-	const char *nombres_meses[NUM_MESES] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-	
-	int index = anio - ANIO_BASE;
-	if (index < 0 || index >= NUM_ANIOS){
-		printf("Anio fuera de rango.\n");
-		return;
-	}
-	
-	int contador_sequia = 0;
-	int contador_abundancia = 0;
-	
-	int mes;
-	
-	for (mes = 1; mes <= NUM_MESES; mes++){
-		
-		float volumen_actual = 0.0;
-		int encontrado_actual = 0;
-		
-		int i = 0;
-				
-		while ( i < num_registros && encontrado_actual == 0){
-			if(strcmp(registros[i].cuenca, cuenca) == 0 && strcmp(registros[i].embalse, embalse) == 0 && registros[i].mes == mes){
-				volumen_actual = registros[i].volumen[index];
-				encontrado_actual = 1;
-			}
-			i++;
-		}
-			
-		if(encontrado_actual == 1){
-			float suma_historica = 0.0;
-			int conteo_historico = 0;
-			int j;
-			
-			for (j = 0; j < num_registros; j++){
-				if(strcmp(registros[j].cuenca, cuenca) == 0 && strcmp(registros[j].embalse, embalse) == 0 && registros [j].mes == mes){
-					int anio;
-					for (anio = 0; anio < NUM_ANIOS; anio++){
-						suma_historica += registros[j].volumen[anio];
-						conteo_historico++;
-					}
-				}
-			}
-			
-			float media_historica = 0.0;
-					
-			if(conteo_historico > 0){
-				media_historica = suma_historica / conteo_historico;
-			}
-			char estado_hidrico[15] = "Normal";
-			char observacion[30] = "";
-						
-			if(media_historica >0){
-					
-				float diferencia = ((volumen_actual - media_historica) / media_historica) * 100;
-					
-				if(diferencia < -20.0){
-					strcpy(estado_hidrico, "SEQUIA");
-					contador_sequia++;
-					contador_abundancia = 0;
-				}
-				else if(diferencia > 20.0){
-					strcpy(estado_hidrico, "ABUNDANCIA");
-					contador_abundancia++;
-					contador_sequia = 0;
-				}
-				else{
-					strcpy(estado_hidrico, "Normal");
-					contador_sequia = 0;
-					contador_abundancia = 0;
-				}
-					
-				
-				if (contador_sequia >= 3) {
-					strcpy(observacion, "(Sequia prolongada)");
-					contador_sequia = 0;
-				}
-				else if (contador_abundancia >= 3) {
-					strcpy(observacion, "(Abundancia sostenida)");
-	                contador_abundancia = 0;
-	   			}
-            } 
-	            	
-	            	
-			if(media_historica > 0){
-				printf("%-12s %-8.2f %-8.2f %-15s %s\n", nombres_meses[mes-1], volumen_actual, media_historica, estado_hidrico, observacion);
-			}
-			else{
-				printf("%-12s %-8.2f %-8s %-15s\n", nombres_meses[mes-1], volumen_actual, "No hay datos", "Datos insuficientes");
-			}
-		}
-		
-		else{
-			printf("%-12s %-8s %-8s %-15s\n", nombres_meses[mes-1], "No hay datos", "No hay datos", "Datos insuficientes");
-		}
-	}
-}
-	
 int main() {
     Registro registros[MAX_REGISTROS];
     int num_registros = 0;
@@ -465,9 +235,11 @@ int main() {
 
     printf("\nSeleccione una cuenca:\n");
     mostrar_lista(&cuencas);
+    
     int seleccion_cuenca;
     printf("Opcion: ");
     scanf("%d", &seleccion_cuenca);
+    
     getchar();
     if (seleccion_cuenca < 1 || seleccion_cuenca > cuencas.count) {
         printf("Seleccion invalida.\n");
@@ -478,6 +250,7 @@ int main() {
 
     
     StringList embalses;
+    
     init_string_list(&embalses);
     for (int i = 0; i < num_registros; i++) {
         if (strcmp(registros[i].cuenca, cuenca_elegida) == 0) {
@@ -487,10 +260,12 @@ int main() {
 
     printf("\nSeleccione un embalse en la cuenca '%s':\n", cuenca_elegida);
     mostrar_lista(&embalses);
+    
     int seleccion_embalse;
     printf("Opcion: ");
     scanf("%d", &seleccion_embalse);
     getchar();
+    
     if (seleccion_embalse < 1 || seleccion_embalse > embalses.count) {
         printf("Seleccion invalida.\n");
         free_string_list(&cuencas);
@@ -500,7 +275,7 @@ int main() {
     char *embalse_elegido = embalses.items[seleccion_embalse - 1];
 
    
-	   int anio;
+      int anio;
 	do {
 	    printf("\nIngrese el anio (entre 2012 y 2021): ");
 	    scanf("%d", &anio);
@@ -517,69 +292,14 @@ int main() {
 	        printf("Mes invalido. Intente de nuevo.\n");
 	    }
 	} while (mes < 1 || mes > 12);
-	
-	    
-    //media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
-    
-    //media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
-    
-   //evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
-   //diagrma_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
 
-    //printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
-    //buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+    printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
+    buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
 
-    //comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-
-//Menú para seleccionar que funcionalidad quieres hacer
-    int opcion;
     
-    do{
-    	menu_nuevas_funcionalidades();scanf("%d", &opcion);
-    	getchar();
-    	
-    	switch(opcion){
-    		case 1:{
-    			media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
-    			break;
-   		}
-   		case 2:{
-   			media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
-   			break;
-   		}
-		case 3:{
-			evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
-   			diagrama_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
-			break;
-		}
-		case 4:{
-			printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
-    			buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-			break;
-		}
-		case 5:{
-			comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-   			break;
-   		}
-   		case 6:{
-   			identificacion_sequia_abundancia_hidrica(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-    			break;
-   		}
-		case 7:{
-			printf("Salinedo del programa...\n");
-   			break;
-   		}
-   		default:{
-   			printf("Opcion no valida. Escoja una funcionalidad con un numero del 1 al 6.\n");
-   			break;
-   		}
-   	}
-   	if (opcion != 7){
-   		printf("\nPresione 'Enter' para continuar..");
-   		getchar();
-   	}
-   }while(opcion != 7);
-       
+    comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+
+    
     free_string_list(&cuencas);
     free_string_list(&embalses);
     return 0;
