@@ -1,23 +1,41 @@
+//Hay que tener en cuenta que he hecho el codigo en base a lo que ya habia hecho Ignacio, y con las mismas variables y dimensiones definidas
+//Defino la dimension de la altura maxima para el diagrama de barras
 #define ALTURA_MAX 22
 
+//Añado los prototipos de las funciones que voy a definir y usar
+void media_anual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio);
+void media_mensual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio, int mes);
+void evolucion_del_volumen_de_la_cuenca(Registro registros[], int num_registros, const char *cuenca);
+void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_registros, const char *cuenca);
+void menu_funcionalidades();
+void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_registros, const char *cuenca, const char *embalse, int anio);
+
+//Defino la funcion que calcula la media anual de las cuencas
 void media_anual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio){
+
+	//Calculo el indice del anio, restando al anio escogido el ANIO_BASE(2012)
 	int index = anio - ANIO_BASE;
-	
+
+	//Si el indice del anio no esta entre 0 y el NUM_ANIOS(10), el anio esta fuera de año y se acaba la funcion	
 	if (index < 0 || index >= NUM_ANIOS){
 		printf("Anio fuera de rango.\n");
 		return;
 	}
-	
+
+	//Inicializo las variables que me van a ayudar a calcular la media
 	float suma = 0.0;
 	int contador = 0;
-	
+
+	//Recorro todos los registroos del fichero dataset.csv
 	for (int i = 0; i < num_registros; i++){
+		//Busco los registos que coincidan con la cuenca que he elegido
 		if(strcmp(registros[i].cuenca, cuenca) == 0){
-			suma += registros[i].volumen[index];
-			contador++;
+			suma += registros[i].volumen[index]; //Sumo los volumenes de los registros encontrados
+			contador++; //Cuento el numero de registros encontrados
 		}
 	}
-	
+
+	//Si he encontrado registros que coincidan con la cuenca elegida, calculo y muestro la media anual de la cuenca
 	if (contador > 0){
 	printf("\nLa media en el %d de la cuenca '%s': %.2f\n", anio, cuenca, suma / contador);
 	}else{
@@ -25,29 +43,39 @@ void media_anual_cuenca(Registro registros[], int num_registros, const char* cue
 	}
 }
 
+//Defino la funcion que calcula la media mensual de las cuencas
 void media_mensual_cuenca(Registro registros[], int num_registros, const char* cuenca, int anio, int mes){
+
+	//Calculo el indice del anio, restando al anio escogido el ANIO_BASE(2012)
 	int index = anio - ANIO_BASE;
-	
+
+	//Si el indice del anio no esta entre 0 y el NUM_ANIOS(10), el anio esta fuera de año y se acaba la funcion
 	if (index < 0 || index >= NUM_ANIOS){
 		printf("Anio fuera de rango.\n");
 		return;
 	}
+	//Aqui verificamos que el mes elegido sea valido
 	if (mes < 1 || mes > 12){
 		printf("El mes debe de estar entre 1 y 12.\n");
 		return;
 	}
 	
+	//Inicializo las variables que me van a ayudar a calcular la media
 	float suma = 0.0;
 	int contador = 0;
 	
+	//Recorro todos los registroos del fichero dataset.csv
 	for (int i = 0; i < num_registros; i++){
+		//Busco los registos que coincidan con la cuenca y mes que he elegido
 		if(strcmp(registros[i].cuenca, cuenca) == 0 && registros[i].mes == mes){
-			suma += registros[i].volumen[index];
-			contador++;
+			suma += registros[i].volumen[index]; //Sumo los volumenes de los registros encontrados
+			contador++; //Cuento el numero de registros encontrados
 		}
 	}
+	//Hago un array con los nombres de los meses para mostrar luego el ressultado
 	const char* nombres_meses[NUM_MESES] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
 	
+	//Si he encontrado registros que coincidan con la cuenca elegida, calculo y muestro la media mensual de la cuenca en el mes elegido
 	if (contador > 0){
 	printf("\nLa media en %s de %d de la cuenca '%s': %.2f\n", nombres_meses[mes-1], anio, cuenca, suma / contador);
 	}else{
@@ -55,23 +83,31 @@ void media_mensual_cuenca(Registro registros[], int num_registros, const char* c
 	}
 }
 
+//Defino la funcion que calcula la evolucion volumetrica de la cuenca seleccionada
 void evolucion_del_volumen_de_la_cuenca(Registro registros[], int num_registros, const char *cuenca){
 	printf("\nLa evolucion anual de la cuenca del %s es:\n", cuenca);
-    for (int anio = 0; anio < NUM_ANIOS; anio++){
-    	float suma = 0.0;
+
+	//Hacemos un bucle que recorra todos los anios
+    	for (int anio = 0; anio < NUM_ANIOS; anio++){
+    		float suma = 0.0;
     	
-    	for (int i = 0; i< num_registros; i++){
-    		if (strcmp(registros[i].cuenca, cuenca) == 0){
-    			suma += registros[i].volumen[anio];
+		//Hacemos un bucle anidado que recorra todos los registros del fichero dataset.csv
+    		for (int i = 0; i< num_registros; i++){
+    			if (strcmp(registros[i].cuenca, cuenca) == 0){
+    			suma += registros[i].volumen[anio]; //Suma todos los volumenes de los embalses de la cuenca seleccionada para el anio en curso
 			}
 		}
-		printf("En el %d, su volumen era: %10.2f\n", ANIO_BASE + anio, suma);
-	}
+		printf("En el %d, su volumen era: %10.2f\n", ANIO_BASE + anio, suma); //Muestro el resultado de la suma por anio
+	} //Se repite el proceso para todos los anios
 }
 
+//Defino la funcion que hace el diagrma de barras en base a la funcion de la evolucion volumetrica de las cuencas
 void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_registros, const char *cuenca){
+
+	//Hago un array para alamcenar los volumenes anuales
 	float volumenes_anuales[NUM_ANIOS] = {0};
-	
+
+	//Calculo los volumenes anuales sumando todos los volumenes de la cuenca (para empezar el diagrama por arriba)
 	for(int anio = 0; anio < NUM_ANIOS; anio++){
 		for(int i = 0; i < num_registros; i++){
 			if(strcmp(registros[i].cuenca, cuenca) == 0){
@@ -79,44 +115,50 @@ void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_
 			}
 		}
 	}
-	
+
+	//Busco el volumen maximo para escalar en el diarama de flujo
 	float maximo = 0.0;
-	
 	for(int i = 0; i < NUM_ANIOS; i++){
 		if(volumenes_anuales[i] > maximo){
 			maximo = volumenes_anuales[i];
 		}
 	}
+
 	printf("\nDiagrma de Barras de la evolucion volumetrica anual de la cuenca:\n");
-	
+
+	//Dibujo el diagrama de barras nivel por nivel (de arriba a abajo)
 	for(int nivel = ALTURA_MAX; nivel > 0; nivel--){
+		//Calculo el volumen correspondiente al nivel
 		float volumenes_nivelados = (maximo * nivel / ALTURA_MAX);
-		printf("%6.1f | ", volumenes_nivelados);
-		
+		printf("%6.1f | ", volumenes_nivelados); //Pongo los volumenes en los niveles correspondientes a lo largo del eje Y y dibujo el eje
+
+		//Dibujo las barras para cada año (con 3 asteriscos)
 		for(int anio = 0; anio < NUM_ANIOS; anio++){
 			if (volumenes_anuales[anio] >= volumenes_nivelados){
-				printf(" *** ");
+				printf(" *** "); //Barra
 			}
 			else{
-				printf("     ");
+				printf("     "); //Espacio vacio
 			}
 		}
 		printf("\n");
 	}
-	
+
+	//Dibujo la linea base del diagrama
 	printf("       +-");
-	
 	for(int anio = 0; anio < NUM_ANIOS; anio++){
 		printf("-----");
 	}
 	printf("\n         ");
-	
+
+	//Muestro los anios en el eje X
 	for(int anio = 0; anio < NUM_ANIOS; anio++){
 		printf(" %4d", anio + ANIO_BASE);
 	}
 	printf("\n");
 }
 
+//Defino la funcion que muestra el menu con las diferentes funcionalidades que el usuario va a tener que escoger
 void menu_funcionalidades(){
 	printf("\n\nEscoja una funcionalidad\n");
 	printf("[1] Media anual del volumen de la cuenca del anio elegido: \n");
@@ -133,31 +175,35 @@ void menu_funcionalidades(){
 	printf("Opcion: ");
 }
 
+//Defino las funcion que no identificara los periodos de sequie y abundancia hidrica del embalse y en el anio escogidos
 void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_registros, const char *cuenca, const char *embalse, int anio){
 	printf("\nIdentificacion de sequia y abundancia hidrica del emblase '%s' de la cuenca '%s'' en el anio %d\n:", embalse, cuenca, anio);
 	printf("\n%-12s %-8s %-8s %-15s\n", "Mes", "Actual", "Media", "Estado");
 	
-	
+	//Array con los nombres de los meses para poder mostrar mas tarde el resultado
 	const char *nombres_meses[NUM_MESES] = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-	
+
+	//Verifico que el anio este en el ranfo permitido (2012-2021)
 	int index = anio - ANIO_BASE;
 	if (index < 0 || index >= NUM_ANIOS){
 		printf("Anio fuera de rango.\n");
 		return;
 	}
-	
+
+	//Contadores para sequias y abundancias prolongadas
 	int contador_sequia = 0;
 	int contador_abundancia = 0;
 	
 	int mes;
-	
+	//Analizo cada mes
 	for (mes = 1; mes <= NUM_MESES; mes++){
-		
+
+		//Variables para el volumen atual
 		float volumen_actual = 0.0;
 		int encontrado_actual = 0;
-		
-		int i = 0;
-				
+
+		//Busco el regisgtro correspondiente al mes actual
+		int i = 0;	
 		while ( i < num_registros && encontrado_actual == 0){
 			if(strcmp(registros[i].cuenca, cuenca) == 0 && strcmp(registros[i].embalse, embalse) == 0 && registros[i].mes == mes){
 				volumen_actual = registros[i].volumen[index];
@@ -167,10 +213,11 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 		}
 			
 		if(encontrado_actual == 1){
+			//Calculo la medianhistorica para el mes elegido/actual
 			float suma_historica = 0.0;
 			int conteo_historico = 0;
+
 			int j;
-			
 			for (j = 0; j < num_registros; j++){
 				if(strcmp(registros[j].cuenca, cuenca) == 0 && strcmp(registros[j].embalse, embalse) == 0 && registros [j].mes == mes){
 					int anio;
@@ -186,11 +233,14 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 			if(conteo_historico > 0){
 				media_historica = suma_historica / conteo_historico;
 			}
+
+			//Determino el estado hidrico
 			char estado_hidrico[15] = "Normal";
 			char observacion[30] = "";
 						
 			if(media_historica >0){
-					
+
+				//Calculo la diferencia porcentual (para ver si es mayor (abundancia) o menor (sequia) que el 20%)
 				float diferencia = ((volumen_actual - media_historica) / media_historica) * 100;
 					
 				if(diferencia < -20.0){
@@ -209,7 +259,7 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 					contador_abundancia = 0;
 				}
 					
-				
+				//Verifico los periodos prolongados
 				if (contador_sequia >= 3) {
 					strcpy(observacion, "(Sequia prolongada)");
 					contador_sequia = 0;
@@ -220,7 +270,7 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 	   			}
             } 
 	            	
-	            	
+	            	//Muestro los resultados para el mes seleccionado
 			if(media_historica > 0){
 				printf("%-12s %-8.2f %-8.2f %-15s %s\n", nombres_meses[mes-1], volumen_actual, media_historica, estado_hidrico, observacion);
 			}
@@ -230,6 +280,7 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 		}
 		
 		else{
+			//Mensaje cuando no hay datos
 			printf("%-12s %-8s %-8s %-15s\n", nombres_meses[mes-1], "No hay datos", "No hay datos", "Datos insuficientes");
 		}
 	}
@@ -240,10 +291,12 @@ int main() {
     int opcion;
     
     do{
+	//Uso la funcion de menu funcionalidades para mostrar el menu y leer las opciones
     	menu_funcionalidades();
 	scanf("%d", &opcion);
-    	getchar();
-    	
+    	getchar(); //Limpio el buffer de entrada
+
+	//Ejecuto la funcionalidad seleccionada (la cual sera el uso de una funcion definida previamente, exceptuando salri)
     	switch(opcion){
     		case 1:{
     			media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
