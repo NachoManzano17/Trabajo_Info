@@ -9,7 +9,7 @@
 
 
 
-
+//aquí guardo toda la info por fila del CSV: cuenca, embalse, mes y los volúmenes
 typedef struct {
     char cuenca[50];
     char embalse[50];
@@ -17,12 +17,14 @@ typedef struct {
     float volumen[NUM_ANIOS]; 
 } Registro;
 
+//Esta sirve para ir acumulando los volúmenes por cuenca y poder comparar despues.
 typedef struct {
     char cuenca[50];
     float suma_total;
     int conteo;
 } CuencaInfo;
 
+//Estructura que guarda strings sin repetir elementos y capaz de crecer de forma dinammica
 typedef struct {
     char **items;
     int count;
@@ -30,13 +32,16 @@ typedef struct {
 } StringList;
 
 
-
+//Esta funcion inicializa la lista de strings
+//Y reserva memoria utilizando malloc para guardar los punteros
 void init_string_list(StringList *list) {
     list->capacity = 10;
     list->count = 0;
     list->items = malloc(list->capacity * sizeof(char*));
 }
 
+//Esta sirve para añadir string si no esta repetida
+//En caso de que el espacio este lleno, se duplica usando realloc
 void add_to_list_if_unique(StringList *list, const char *value) {
     for (int i = 0; i < list->count; i++) {
         if (strcmp(list->items[i], value) == 0) return;
@@ -48,6 +53,7 @@ void add_to_list_if_unique(StringList *list, const char *value) {
     list->items[list->count++] = strdup(value);
 }
 
+//Esta funcion libera toda la memoria utilizada, cuando ya no es necesaria
 void free_string_list(StringList *list) {
     for (int i = 0; i < list->count; i++) {
         free(list->items[i]);
@@ -55,6 +61,7 @@ void free_string_list(StringList *list) {
     free(list->items);
 }
 
+//Mostrar_lista y quitar_comillas sirven para dejar el menu mas limpio quitando guiones y comillas.
 void mostrar_lista(StringList *list) {
     for (int i = 0; i < list->count; i++) {
         char buffer[100];
@@ -83,7 +90,7 @@ void quitar_comillas(char *cadena) {
 
 
 
-
+//Con esta funcion se lee el archivo y se guarda en "Registro"
 int leer_csv(const char *nombre_archivo, Registro registros[], int *num_registros) {
     FILE *fp = fopen(nombre_archivo, "r");
     if (!fp) {
@@ -131,6 +138,7 @@ int leer_csv(const char *nombre_archivo, Registro registros[], int *num_registro
     return 1;
 }
 
+//Busca los registros del embalse seleccionado y muestra el volumen del año elegido
 void buscar_volumen(Registro *registros, int num_registros, const char *cuenca, const char *embalse, int anio) {
     int encontrado = 0;
     int index = anio - ANIO_BASE;
@@ -153,6 +161,7 @@ void buscar_volumen(Registro *registros, int num_registros, const char *cuenca, 
     }
 }
 
+//Aqui se suman todos los volumenes de cada cuenca en el año elegido y se muestra la comparacion con la cuenca seleccionada
 void comparar_con_otras_cuencas(Registro registros[], int num_registros, const char *cuenca_objetivo, const char *embalse_objetivo, int anio) {
     int index = anio - ANIO_BASE;
     if (index < 0 || index >= NUM_ANIOS) {
@@ -216,7 +225,10 @@ void comparar_con_otras_cuencas(Registro registros[], int num_registros, const c
 
 
 
-
+//En la funcion main, se interactua con el usuario
+//Primero lee el archivo
+//A continuacion se muestran las cuencas disponibles y una vez se elige una se hace lo mismo con los embalses y por ultimo se pide un año y un mes
+//Finalmente, se muestran los volumenes y la comparacion entre cuencas
 int main() {
     Registro registros[MAX_REGISTROS];
     int num_registros = 0;
