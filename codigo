@@ -333,7 +333,7 @@ void diagrama_barras_evolucion_volumetrica_cuenca(Registro registros[], int num_
 	printf("\n");
 }
 
-void menu_nuevas_funcionalidades(){
+void menu_funcionalidades(){
 	printf("\n\nEscoja una funcionalidad\n");
 	printf("[1] Media anual del volumen de la cuenca del anio elegido: \n");
 	printf("[2] Media mensual del volumen de la cuenca en el anio y mes elegidos: \n");
@@ -517,25 +517,12 @@ int main() {
 	        printf("Mes invalido. Intente de nuevo.\n");
 	    }
 	} while (mes < 1 || mes > 12);
-	
-	    
-    //media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
-    
-    //media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
-    
-   //evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
-   //diagrma_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
-
-    //printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
-    //buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-
-    //comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
 
 //Menú para seleccionar que funcionalidad quieres hacer
     int opcion;
     
     do{
-    	menu_nuevas_funcionalidades();scanf("%d", &opcion);
+    	menu_funcionalidades();scanf("%d", &opcion);
     	getchar();
     	
     	switch(opcion){
