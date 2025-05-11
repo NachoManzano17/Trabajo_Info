@@ -625,12 +625,22 @@ void cambio_de_cuenca(Registro registros[], int num_registros){
     char *embalse_elegido = embalses.items[seleccion_embalse - 1];
 
     int anio;
-    printf("\nIngrese el anio (entre 2012 y 2021): ");
-    scanf("%d", &anio);
-    
-    int mes;
-    printf("\nIngrese el mes (de forma numerica): ");
-    scanf("%d", &mes); 
+	do {
+	    printf("\nIngrese el anio (entre 2012 y 2021): ");
+	    scanf("%d", &anio);
+	    if (anio < ANIO_BASE || anio >= ANIO_BASE + NUM_ANIOS) {
+	        printf("Anio invalido. Intente de nuevo.\n");
+	    }
+	} while (anio < ANIO_BASE || anio >= ANIO_BASE + NUM_ANIOS);
+	
+	int mes;
+	do {
+	    printf("\nIngrese el mes (de forma numerica, 1 a 12): ");
+	    scanf("%d", &mes);
+	    if (mes < 1 || mes > 12) {
+	        printf("Mes invalido. Intente de nuevo.\n");
+	    }
+	} while (mes < 1 || mes > 12); 
     
     free_string_list(&cuencas);
     free_string_list(&embalses);
