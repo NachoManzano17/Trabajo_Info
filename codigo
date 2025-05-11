@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,17 @@ typedef struct {
     int count;
     int capacity;
 } StringList;
+
+typedef struct { 
+    int anio;
+    float lluvia_mm;
+} Pluviometria;
+
+typedef struct { 
+    int anio;
+    int mes; 
+    float temperatura_media;
+} Temperatura;
 
 
 
@@ -131,6 +143,37 @@ int leer_csv(const char *nombre_archivo, Registro registros[], int *num_registro
 
     fclose(fp);
     return 1;
+}
+
+int leer_pluviometria(const char* nombre_archivo, Pluviometria datos[], int*total) {
+FILE * f = fopen (nombre_archivo, "r"); 
+if (!f) {
+perror  ("No se puede abrir el archivo de pluviometria"); 
+return 0; 
+}
+
+*total = 0; 
+while (fscanf(f, "%d,%f", &datos[*total].anio, &datos[*total].lluvia_mm) == 2) {
+(*total)++; 
+}
+fclose (f); 
+return 1; 
+}
+
+
+int leer_temperaturas(const char* nombre_archivo, Temperatura datos[], int*total) {
+FILE * f = fopen (nombre_archivo, "r"); 
+if (!f) {
+perror  ("No se puede abrir el archivo de temperaturas"); 
+return 0; 
+}
+
+*total = 0; 
+while (fscanf(f, "%d,%d, %f", &datos[*total].anio, &datos[*total].mes, &datos[*total].temperatura_media)== 3) {
+(*total)++; 
+}
+fclose (f); 
+return 1; 
 }
 
 void buscar_volumen(Registro *registros, int num_registros, const char *cuenca, const char *embalse, int anio) {
@@ -341,7 +384,11 @@ void menu_funcionalidades(){
 	printf("[4] Volumen del embalse en el anio elegido: \n");
 	printf("[5] Comparar con otras cuencas: \n");
 	printf("[6] Identificar los periodos de sequia y abundancia hidrica de la cuenca: \n");
-	printf("[7] Salir\n");
+	printf("[7] Fucionalidad del agua de los embalses: \n");
+	printf("[8] Ver pluviometria anual: \n");
+	printf("[9] Ver temperatura mensual: \n");
+	printf("[10] Seleccionar otra cuenca: \n");
+	printf("[11] Salir\n");
 	printf("Opcion: ");
 }
 
@@ -446,8 +493,139 @@ void identificacion_sequia_abundancia_hidrica(Registro registros[], int num_regi
 		}
 	}
 }
+
+// Función que hemos creado para leer y mostrar el uso del agua del embalse seleccionado
+void mostrar_uso_agua_embalse(const char *cuenca, const char *embalse) {
+    FILE *fp = fopen("uso del agua de los embalses.txt", "r");
+    if (!fp) {
+        perror("No se pudo abrir el archivo de usos del agua");
+        return;
+    }
+
+    char linea[MAX_LINE];
+    int encontrado = 0;
+    
+    printf("\nUso del agua para el embalse '%s' en la cuenca '%s':\n", embalse, cuenca);
+    
+    // Leer el archivo 
+    while (fgets(linea, MAX_LINE, fp)) {
+        char cuenca_archivo[50], embalse_archivo[50], uso[200];
+        
+        
+        char *token = strtok(linea, ",");
+        if (!token) continue;
+        strncpy(cuenca_archivo, token, sizeof(cuenca_archivo));
+        
+        token = strtok(NULL, ",");
+        if (!token) continue;
+        strncpy(embalse_archivo, token, sizeof(embalse_archivo));
+        
+        token = strtok(NULL, "\n");
+        if (!token) continue;
+        strncpy(uso, token, sizeof(uso));
+        
+        
+        // Comparar con la cuenca y embalse seleccionados
+        if (strcmp(cuenca_archivo, cuenca) == 0 && strcmp(embalse_archivo, embalse) == 0) {
+            printf("  - %s\n", uso);
+            encontrado = 1;
+        }
+    }
+    
+    
+    if (!encontrado) {
+        printf("No se encontró información de uso del agua para este embalse.\n");
+    }
+    
+    fclose(fp);
+}
+	
+void cambio_de_cuenca(Registro registros[], int num_registros){
+    
+    for(int i=0; i<30; i++){
+        printf("\n");
+    }
+        
+    StringList cuencas;
+    init_string_list(&cuencas);
+    for (int i = 0; i < num_registros; i++) {
+        add_to_list_if_unique(&cuencas, registros[i].cuenca);
+    }
+
+    printf("\nSeleccione una cuenca:\n");
+    mostrar_lista(&cuencas);
+    int seleccion_cuenca;
+    printf("Opcion: ");
+    scanf("%d", &seleccion_cuenca);
+    getchar();
+    if (seleccion_cuenca < 1 || seleccion_cuenca > cuencas.count) {
+        printf("Seleccion invalida.\n");
+        free_string_list(&cuencas);
+        return;
+    }
+    char *cuenca_elegida = cuencas.items[seleccion_cuenca - 1];
+
+    StringList embalses;
+    init_string_list(&embalses);
+    for (int i = 0; i < num_registros; i++) {
+        if (strcmp(registros[i].cuenca, cuenca_elegida) == 0) {
+            add_to_list_if_unique(&embalses, registros[i].embalse);
+        }
+    }
+
+    printf("\nSeleccione un embalse en la cuenca '%s':\n", cuenca_elegida);
+    mostrar_lista(&embalses);
+    int seleccion_embalse;
+    printf("Opcion: ");
+    scanf("%d", &seleccion_embalse);
+    getchar();
+    if (seleccion_embalse < 1 || seleccion_embalse > embalses.count) {
+        printf("Seleccion invalida.\n");
+        free_string_list(&cuencas);
+        free_string_list(&embalses);
+        return;
+    }
+    char *embalse_elegido = embalses.items[seleccion_embalse - 1];
+
+    int anio;
+    printf("\nIngrese el anio (entre 2012 y 2021): ");
+    scanf("%d", &anio);
+    
+    int mes;
+    printf("\nIngrese el mes (de forma numerica): ");
+    scanf("%d", &mes); 
+    
+    free_string_list(&cuencas);
+    free_string_list(&embalses);
+    
+    return;    
+}
+
+void mostrar_pluviometria_anual(Pluviometria datos[], int total_pluvio) {
+    printf("\nMedias anuales de Pluviometria: \n"); 
+    printf("%-10s %-15s\n", "Anio", "Lluvia (mm)");
+    for (int i = 0; i < total_pluvio; i++) {
+        printf("%-10d %-15.2f\n", datos[i].anio, datos[i].lluvia_mm); 
+    }
+}
+
+void mostrar_temperaturas_mensuales(Temperatura datos[], int total_temp, int anio) {
+    printf("\nTemperaturas mensuales del anio %d: \n", anio);
+    const char* nombres_meses[NUM_MESES] = {
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    };
+
+    printf("%-12s %-15s\n", "Mes", "Temperatura(ºC)");
+    for (int i = 0; i < total_temp; i++) {
+        if (datos[i].anio == anio && datos[i].mes >= 1 && datos[i].mes <= 12) {
+            printf("%-12s %-15.2f\n", nombres_meses[datos[i].mes - 1], datos[i].temperatura_media); 
+        }
+    }
+}
 	
 int main() {
+	SetConsoleOutputCP(65001);
     Registro registros[MAX_REGISTROS];
     int num_registros = 0;
 
@@ -523,50 +701,74 @@ int main() {
     
     do{
     	menu_funcionalidades();
-	scanf("%d", &opcion);
+		scanf("%d", &opcion);
     	getchar();
     	
     	switch(opcion){
     		case 1:{
     			media_anual_cuenca(registros, num_registros, cuenca_elegida, anio);
     			break;
-   		}
-   		case 2:{
-   			media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
-   			break;
-   		}
-		case 3:{
-			evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
-   			diagrama_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
-			break;
-		}
-		case 4:{
-			printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
-    			buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-			break;
-		}
-		case 5:{
-			comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
-   			break;
-   		}
-   		case 6:{
-   			identificacion_sequia_abundancia_hidrica(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+			}
+			case 2:{
+   				media_mensual_cuenca(registros, num_registros, cuenca_elegida, anio, mes);
+   				break;
+			}
+			case 3:{
+				evolucion_del_volumen_de_la_cuenca(registros, num_registros, cuenca_elegida);
+   				diagrama_barras_evolucion_volumetrica_cuenca(registros, num_registros, cuenca_elegida);
+				break;
+			}
+			case 4:{
+				printf("\nVolumen de '%s' en '%s' para el anio %d:\n", embalse_elegido, cuenca_elegida, anio);
+	    		buscar_volumen(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+				break;
+			}
+			case 5:{
+				comparar_con_otras_cuencas(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
+				break;
+   			}	
+			case 6:{
+   				identificacion_sequia_abundancia_hidrica(registros, num_registros, cuenca_elegida, embalse_elegido, anio);
     			break;
+   			}
+			case 7:{
+				mostrar_uso_agua_embalse(cuenca_elegida, embalse_elegido);
+   				break;
+   			}
+			case 8:{
+				Pluviometria pluviometrias[NUM_ANIOS];
+                int total_pluvio = 0;
+                if (leer_pluviometria("pluviometria.csv", pluviometrias, &total_pluvio)) {
+                    mostrar_pluviometria_anual(pluviometrias, total_pluvio); 
+                }
+   				break;
+   			}
+			case 9:{
+				Temperatura temperaturas[NUM_ANIOS * NUM_MESES];
+                int total_temp = 0; 
+                if (leer_temperaturas("temperaturas.csv", temperaturas, &total_temp)) {
+                    mostrar_temperaturas_mensuales(temperaturas, total_temp, anio); 
+                }
+   				break;
+   			}
+			case 10:{
+				cambio_de_cuenca(registros, num_registros);
+                continue;
+   			}
+			case 11:{
+				printf("Salinedo del programa...\n");
+   				break;
+   			}
+   			default:{
+   				printf("Opcion no valida. Escoja una funcionalidad con un numero del 1 al 11.\n");
+   				break;
+   			}
    		}
-		case 7:{
-			printf("Salinedo del programa...\n");
-   			break;
+   		if (opcion != 11){
+   			printf("\nPresione 'Enter' para continuar..");
+   			getchar();
    		}
-   		default:{
-   			printf("Opcion no valida. Escoja una funcionalidad con un numero del 1 al 6.\n");
-   			break;
-   		}
-   	}
-   	if (opcion != 7){
-   		printf("\nPresione 'Enter' para continuar..");
-   		getchar();
-   	}
-   }while(opcion != 7);
+	}while(opcion != 11);
        
     free_string_list(&cuencas);
     free_string_list(&embalses);
