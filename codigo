@@ -402,7 +402,7 @@ void menu_funcionalidades(){
 	printf("[4] Volumen del embalse en el anio elegido: \n");
 	printf("[5] Comparar con otras cuencas: \n");
 	printf("[6] Identificar los periodos de sequia y abundancia hidrica de la cuenca: \n");
-	printf("[7] Fucionalidad del agua de los embalses: \n");
+	printf("[7] Fucionalidad del agua del embalse escogido: \n");
 	printf("[8] Ver pluviometria anual: \n");
 	printf("[9] Ver temperatura mensual: \n");
 	printf("[10] Seleccionar otra cuenca: \n");
