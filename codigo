@@ -240,7 +240,8 @@ int main() {
     int opcion;
     
     do{
-    	menu_funcionalidades();scanf("%d", &opcion);
+    	menu_funcionalidades();
+	scanf("%d", &opcion);
     	getchar();
     	
     	switch(opcion){
